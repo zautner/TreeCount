@@ -1,41 +1,51 @@
 package org.dy;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 public class TreeCount {
 
+    static final Logger logger = Logger.getLogger(TreeCount.class.getCanonicalName());
+
     public int countTrees(double alpha, List<Tree> forest) {
-        if (forest == null || forest.isEmpty()) return 0;
-        int ret = 0;
-        int visible = 0;
-        int lastTree = 0;
 
-        forest.sort(Tree::compareTo);
-        for (int i = 0; i < forest.size() && forest.get(0).getAngleToTree(forest.get(i)) <= alpha; i++) {
-            visible++;
-            lastTree = i;
+        // two clear edge cases below
+        if (forest == null || forest.isEmpty() || alpha <= 0) {
+            logger.warning("Inconsistent data!..");
+            return 0;
         }
-
-        if (lastTree == 0) lastTree = 1;
-        if (visible > ret) ret = visible;
+        if (alpha >= 360.0) {
+            logger.warning("The whole forest gets visible for this wide angle!");
+            return forest.size();
+        }
+        forest.sort(Tree::compareTo);
+        Tree zeroTree = forest.get(0);
+        int curTree = 0;
+        for (curTree = 0; curTree < forest.size() && zeroTree.getAngleToTree(forest.get(curTree)) < alpha; curTree++) {
+        }
+        if (curTree == forest.size()) return curTree; // we've alredy tested the whole forest, no more situation to test
+        
+        int curCount = curTree;
+        int ret = curCount;
+        logger.info(String.format("Total count at START is %d", curCount));
 
         for (int i = 1; i < forest.size(); i++) {
-            visible -= 1;
-
-
-
-            //double delta = forest.get(i).getAngleToTree(forest.get(i - 1));
-            for (int curLastTree = lastTree; /*curLastTree < forest.size() &&*/
-                    forest.get(i).getAngleToTree(forest.get(curLastTree)) <= alpha
-                    ; curLastTree = (curLastTree + 1) /*% forest.size()*/ /*(curLastTree++)%forest.size()*/ ) {
-                System.out.println(curLastTree);
-                visible++;
-                lastTree=curLastTree;
+            zeroTree = forest.get(i);
+            if (curCount > 0) curCount -= 1; //we no longer count the rightmost tree 
+            if (curTree == i) {
+                // catching up the end of our testing angle
+                curTree = (curTree + 1) % forest.size();
+                curCount = 1; //we cannot see less than 1 tree as we iterate OVER the trees
             }
-
-            if (visible > ret) ret = visible;
+            for (int j = curTree; zeroTree.getAngleToTree(forest.get(curTree = j)) < alpha; j = (j + 1) % forest.size()) {
+                logger.info(String.format("running is %d; last visible is %d", j, curTree));
+                curCount++;
+            }
+            if (curCount > ret) {
+                ret = curCount;
+            }
         }
         return ret;
     }
-}
 
+}

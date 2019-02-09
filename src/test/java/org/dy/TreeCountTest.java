@@ -49,4 +49,34 @@ public class TreeCountTest {
         assertEquals(5, counter.countTrees(alpha, forest));
     }
 
+    @Test
+    public void testLinearForestY() throws Exception {
+        ArrayList<Tree> forest = new ArrayList<Tree>();
+        forest.add(new Tree(0, 30));
+        forest.add(new Tree(0, 2));
+        forest.add(new Tree(0, 1));
+        forest.add(new Tree(0, 0));
+        forest.add(new Tree(0, -1));
+        forest.add(new Tree(0, -2));
+        forest.add(new Tree(0, 20));
+        forest.add(new Tree(0, -20));
+
+        double alpha = 5;
+        assertEquals(4, counter.countTrees(alpha, forest));
+    }
+
+    @Test
+    public void testLinearForestX() throws Exception {
+        ArrayList<Tree> forest = new ArrayList<Tree>();
+        forest.add(new Tree(30, 0));
+        forest.add(new Tree(2, 0));
+        forest.add(new Tree(1, 0));
+        forest.add(new Tree(-1, 0));
+        forest.add(new Tree(-7, 0));
+        forest.add(new Tree(-70, 0));
+        forest.add(new Tree(-700000, 0));
+
+        double alpha = .5;
+        assertEquals(4, counter.countTrees(alpha, forest));
+    }
 }
